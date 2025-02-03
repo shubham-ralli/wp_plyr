@@ -1,0 +1,245 @@
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+    .wp-plyr-wrapper {
+        background: #ffffff;
+        padding: 15px;
+        border-radius: 15px;
+        margin: 15px 0;
+        max-width: 600px;
+        position: relative;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .wp-plyr-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .wp-plyr-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-grow: 1;
+    }
+
+    .wp-plyr-button {
+        background: #2196F3;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: background 0.3s ease;
+    }
+
+    .wp-plyr-button:hover {
+        background: #1976D2;
+    }
+
+    .wp-plyr-progress {
+        flex-grow: 1;
+        height: 5px;
+        background: #e0e0e0;
+        border-radius: 3px;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .wp-plyr-progress-filled {
+        position: absolute;
+        height: 100%;
+        background: #2196F3;
+        border-radius: 3px;
+        width: 0;
+        transition: width 0.1s linear;
+    }
+
+    .wp-plyr-time {
+        font-size: 14px;
+        color: #666;
+        min-width: 100px;
+        text-align: center;
+    }
+
+    .wp-plyr-volume {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .wp-plyr-volume input[type="range"] {
+        width: 80px;
+        height: 4px;
+        cursor: pointer;
+    }
+
+    .wp-plyr-tooltip {
+        position: absolute;
+        background: #333;
+        color: #fff;
+        padding: 5px;
+        font-size: 12px;
+        border-radius: 5px;
+        display: none;
+        transform: translate(-50%, -30px);
+    }
+
+    .wp-plyr-settings {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+    }
+
+    .wp-plyr-settings-menu {
+        display: none;
+        position: absolute;
+        right: 10px;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .wp-plyr-settings-menu label {
+        font-size: 14px;
+        color: #333;
+    }
+
+    audio.wp_plyr {
+        display: none;
+    }
+</style>
+
+<audio class="wp_plyr">
+    <source src="https://www.socialpilot.co/wp-content/uploads/2025/01/webinar_audio_1.mp3" type="audio/mpeg">
+</audio>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("audio.wp_plyr").forEach(audio => {
+            const playerWrapper = document.createElement("div");
+            playerWrapper.classList.add("wp-plyr-wrapper");
+
+            playerWrapper.innerHTML = `
+                <div class="wp-plyr-container">
+                    <div class="wp-plyr-controls">
+                        <button class="wp-plyr-button play-pause"><i class="fas fa-play"></i></button>
+                        <div class="wp-plyr-progress">
+                            <div class="wp-plyr-progress-filled"></div>
+                            <div class="wp-plyr-tooltip"></div>
+                        </div>
+                        <div class="wp-plyr-time">
+                            <span class="current-time">00:00</span> / 
+                            <span class="duration">00:00</span>
+                        </div>
+                    </div>
+                    <div class="wp-plyr-volume">
+                        <button class="wp-plyr-button volume-btn"><i class="fas fa-volume-up"></i></button>
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.1" value="1">
+                    </div>
+                    <div class="wp-plyr-settings">
+                        <i class="fas fa-cog"></i>
+                        <div class="wp-plyr-settings-menu">
+                            <label>Speed: <select class="speed-control">
+                                <option value="0.5">0.5x</option>
+                                <option value="1" selected>1x</option>
+                                <option value="1.5">1.5x</option>
+                                <option value="2">2x</option>
+                            </select></label>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            audio.after(playerWrapper);
+
+            const playPauseBtn = playerWrapper.querySelector(".play-pause");
+            const progressBar = playerWrapper.querySelector(".wp-plyr-progress");
+            const progressFilled = playerWrapper.querySelector(".wp-plyr-progress-filled");
+            const currentTimeEl = playerWrapper.querySelector(".current-time");
+            const durationEl = playerWrapper.querySelector(".duration");
+            const volumeBtn = playerWrapper.querySelector(".volume-btn");
+            const volumeSlider = playerWrapper.querySelector(".volume-slider");
+            const tooltip = playerWrapper.querySelector(".wp-plyr-tooltip");
+            const settingsBtn = playerWrapper.querySelector(".wp-plyr-settings i");
+            const settingsMenu = playerWrapper.querySelector(".wp-plyr-settings-menu");
+            const speedControl = playerWrapper.querySelector(".speed-control");
+
+            // Play/Pause functionality
+            playPauseBtn.addEventListener("click", () => {
+                if (audio.paused) {
+                    audio.play();
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    audio.pause();
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+
+            // Update progress bar and time
+            audio.addEventListener("timeupdate", () => {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressFilled.style.width = `${percent}%`;
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+                durationEl.textContent = formatTime(audio.duration);
+            });
+
+            // Seek functionality
+            progressBar.addEventListener("click", (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const seekTime = (e.clientX - rect.left) / rect.width * audio.duration;
+                audio.currentTime = seekTime;
+            });
+
+            // Tooltip on hover
+            progressBar.addEventListener("mousemove", (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width * audio.duration;
+                tooltip.style.left = `${e.clientX - rect.left}px`;
+                tooltip.textContent = formatTime(pos);
+                tooltip.style.display = "block";
+            });
+
+            progressBar.addEventListener("mouseleave", () => {
+                tooltip.style.display = "none";
+            });
+
+            // Volume control
+            volumeSlider.addEventListener("input", () => {
+                audio.volume = volumeSlider.value;
+            });
+
+            volumeBtn.addEventListener("click", () => {
+                audio.muted = !audio.muted;
+                volumeBtn.innerHTML = audio.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+            });
+
+            // Settings menu
+            settingsBtn.addEventListener("click", () => {
+                settingsMenu.style.display = settingsMenu.style.display === "block" ? "none" : "block";
+            });
+
+            // Playback speed control
+            speedControl.addEventListener("change", (e) => {
+                audio.playbackRate = e.target.value;
+            });
+
+            // Helper function to format time
+            function formatTime(time) {
+                const minutes = Math.floor(time / 60);
+                const seconds = Math.floor(time % 60);
+                return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+        });
+    });
+</script>
