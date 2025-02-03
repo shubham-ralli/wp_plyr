@@ -91,32 +91,99 @@
         transform: translate(-50%, -30px);
     }
 
-    .wp-plyr-settings {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        cursor: pointer;
-    }
+/* Updated Settings Icon and Menu Styles */
+.wp-plyr-settings {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
 
-    .wp-plyr-settings-menu {
-        display: none;
-        position: absolute;
-        right: 10px;
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
+/* .wp-plyr-settings:hover {
+    transform: rotate(180deg) scale(1.1);
+} */
 
-    .wp-plyr-settings-menu label {
-        font-size: 14px;
-        color: #333;
-    }
+.wp-plyr-settings i {
+    font-size: 1.2rem;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.wp-plyr-settings:hover i {
+    color: #2196F3;
+}
+
+.wp-plyr-settings-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    min-width: 150px;
+    z-index: 100;
+    transform-origin: top right;
+    /* animation: scaleIn 0.15s ease-out; */
+}
+
+/* @keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+} */
+
+.wp-plyr-settings-menu::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 12px;
+    width: 12px;
+    height: 12px;
+    background: white;
+    transform: rotate(45deg);
+    box-shadow: -3px -3px 5px rgba(0, 0, 0, 0.03);
+}
+
+.speed-control {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #444;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+}
+
+.speed-control:focus {
+    outline: none;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.speed-control option {
+    padding: 8px;
+    background: white;
+}
+
+/* Add click-outside functionality for menu */
+.wp-plyr-settings-menu.active {
+    display: block;
+}
 
     audio.wp_plyr {
         display: none;
     }
+
+    
 </style>
 
 <audio class="wp_plyr">
@@ -240,6 +307,29 @@
                 const seconds = Math.floor(time % 60);
                 return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             }
+
+
+
+            // Update the settings menu toggle in JavaScript
+settingsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    settingsMenu.classList.toggle("active");
+});
+
+// Close menu when clicking outside
+document.addEventListener("click", (e) => {
+    if (!playerWrapper.contains(e.target)) {
+        settingsMenu.classList.remove("active");
+    }
+});
+
+// Add keyboard accessibility
+settingsBtn.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+        settingsMenu.classList.toggle("active");
+    }
+});
+
         });
     });
 </script>
